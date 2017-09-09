@@ -6,6 +6,6 @@ int main()
 	int num3 = 9;
 	int sum = num1+num2+num3;
 	
-	printf("%d + %d + %d= %d", num1, num2, num4, sum);
+	printf("%d + %d + %d= %d", num1, num2, num3, sum);
 	return 0; 
 }
