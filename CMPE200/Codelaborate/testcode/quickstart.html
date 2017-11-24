@@ -10,7 +10,7 @@
     <!--Add buttons to initiate auth sequence and sign out-->
     <button id="authorize-button" style="display: none;">Authorize</button>
     <button id="signout-button" style="display: none;">Sign Out</button>
-
+    <button onclick="closeWin()">Done</button>
     <pre id="content"></pre>
 
     <script type="text/javascript">
@@ -154,6 +154,10 @@
           });
       }
 
+    function closeWin() 
+    {
+      myWindow.close();   // Closes the new window
+    }
     </script>
 
     <script async defer src="https://apis.google.com/js/api.js"
