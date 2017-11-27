@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Codelaborate</title>
+<meta charset='utf-8' />
+</head>
+<body>
+
+<p>
+<img src="Icon.png" alt="ProductIcon" width="100" height="100">
+<font size="15" face="Copperplate" color="#1C8AB9">
+  Lets Codelaborate!</font></p>
+
+    <!--Add buttons to initiate auth sequence and sign out-->
+    <button id="authorize-button" style="display: none;">Authorize</button>
+    <button id="signout-button" style="display: none;">Sign Out</button>
+    Upload <br><input type="file" id="upfile" onchange="selectFile()">
+                <br><br>
+    
+    <pre id="content"></pre>
+
+    <script type="text/javascript">
+      // Client ID and API key from the Developer Console
+      var CLIENT_ID = '796595181602-1l7a8frfdkaitgkncqpdrr3ni5jbs9qh.apps.googleusercontent.com';
+      var API_KEY = 'AIzaSyConkrw48lFPOmMJ4JFkqSbSkdHsbh2g3g';
+
+      // Array of API discovery doc URLs for APIs used by the quickstart
+      var DISCOVERY_DOCS = ["https://www.googleapis.com/discovery/v1/apis/drive/v3/rest"];
+
+      // Authorization scopes required by the API; multiple scopes can be
+      // included, separated by spaces.
+      var SCOPES = 'https://www.googleapis.com/auth/drive.file';
+
+      var authorizeButton = document.getElementById('authorize-button');
+      var signoutButton = document.getElementById('signout-button');
+
+      /**
+       *  On load, called to load the auth2 library and API client library.
+       */
+      function handleClientLoad() {
+        gapi.load('client:auth2', initClient);
+      }
+
+      /**
+       *  Initializes the API client library and sets up sign-in state
+       *  listeners.
+       */
+      function initClient() {
+        gapi.client.init({
+          apiKey: API_KEY,
+          clientId: CLIENT_ID,
+          discoveryDocs: DISCOVERY_DOCS,
+          scope: SCOPES
+        }).then(function () {
+          // Listen for sign-in state changes.
+          gapi.auth2.getAuthInstance().isSignedIn.listen(updateSigninStatus);
+
+          // Handle the initial sign-in state.
+          updateSigninStatus(gapi.auth2.getAuthInstance().isSignedIn.get());
+          authorizeButton.onclick = handleAuthClick;
+          signoutButton.onclick = handleSignoutClick;
+        });
+      }
+
+      /**
+       *  Called when the signed in status changes, to update the UI
+       *  appropriately. After a sign-in, the API is called.
+       */
+      function updateSigninStatus(isSignedIn) {
+        if (isSignedIn) {
+          authorizeButton.style.display = 'none';
+          signoutButton.style.display = 'block';
+          listFiles();
+        } else {
+          authorizeButton.style.display = 'block';
+          signoutButton.style.display = 'none';
+        }
+      }
+
+      /**
+       *  Sign in the user upon button click.
+       */
+      function handleAuthClick(event) {
+        gapi.auth2.getAuthInstance().signIn();
+      }
+
+      /**
+       *  Sign out the user upon button click.
+       */
+      function handleSignoutClick(event) {
+        gapi.auth2.getAuthInstance().signOut();
+      }
+//------------boiler plate end--------------------------
+
+      /**
+       * Append a pre element to the body containing the given message
+       * as its text node. Used to display the results of the API call.
+       *
+       * @param {string} message Text to be placed in pre element.
+       */
+      function appendPre(message) {
+        var pre = document.getElementById('content');
+        var textContent = document.createTextNode(message + '\n');
+        pre.appendChild(textContent);
+      }
+
+       /* Print files.*/
+       var mime_types= {
+    "xls" :'application/vnd.ms-excel',
+    "xlsx" :'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    "xml" :'text/xml',
+    "ods":'application/vnd.oasis.opendocument.spreadsheet',
+    "csv":'text/plain',
+    "tmpl":'text/plain',
+    "pdf": 'application/pdf',
+    "php":'application/x-httpd-php',
+    "jpg":'image/jpeg',
+    "png":'image/png',
+    "gif":'image/gif',
+    "bmp":'image/bmp',
+    "txt":'text/plain',
+    "doc":'application/msword',
+    "js":'text/js',
+    "swf":'application/x-shockwave-flash',
+    "mp3":'audio/mpeg',
+    "zip":'application/zip',
+    "rar":'application/rar',
+    "tar":'application/tar',
+    "arj":'application/arj',
+    "cab":'application/cab',
+    "html":'text/html',
+    "htm":'text/html',
+    "default":'application/octet-stream',
+    "folder":'application/vnd.google-apps.folder',
+    "c":'text/x-csrc',
+    "cpp":'text/x-c++src',
+    "java":'text/x-java',
+    "cs": 'text/x-csharp'
+};
+
+
+
+
+
+      function listFiles() 
+      {
+        gapi.client.drive.files.list({'pageSize': 1, 'fields': "nextPageToken, files(id, name)",q:"mimeType contains 'text/'"}).then(
+
+          function(response) 
+          {
+           appendPre('Files:');
+           var files = response.result.files;
+           if (files && files.length > 0) 
+           {
+            for (var i = 0; i < files.length; i++) 
+            {
+              var file = files[i];
+              appendPre(file.name + ' (' + file.id + ')');
+            }
+           } 
+           else 
+           {
+            appendPre('No files found.');
+           }
+          });
+      }
+
+    </script>
+
+    <script async defer src="https://apis.google.com/js/api.js"
+      onload="this.onload=function(){};handleClientLoad()"
+      onreadystatechange="if (this.readyState === 'complete') this.onload()">
+    </script>
+
+<head>
+    <title>CodeMirror</title>
+    <link rel="stylesheet" type="text/css" href="plugin/codemirror/lib/codemirror.css">
+  </head>
+
+    <textarea rows ="50"id="code" class="codemirror-textarea"></textarea>
+
+    <!-- javascript -->
+    <script type="text/javascript" src="js/jquery.min.js"></script>
+    <script type="text/javascript" src="plugin/codemirror/lib/codemirror.js"></script>
+    <link rel="stylesheet" href="plugin/codemirror/theme/mdn-like.css">
+    <script src="plugin/codemirror/addon/selection/active-line.js"></script>
+    <script src="plugin/codemirror/addon/edit/matchbrackets.js"></script>
+
+    <script type="text/javascript">
+   var code = document.getElementById("code");
+   var editor = CodeMirror.fromTextArea(code, {
+      lineNumbers : true,
+      tabMode: 'indent',
+      lineNumbers: true,
+      lineWrapping: true,
+      autoCloseTags: true,
+      matchBrackets: true,
+      theme:"mdn-like"
+    
+  });
+
+    function selectFile(){
+
+      var chosenfile = document.getElementById('upfile').files[0];
+     // var s = 'Name:' + chosenfile.name;
+     // s += '<br> Type: '+ chosenfile.type;
+     // s += '<br> Size: '+ chosenfile.size;
+     // document.getElementById('result').innerHTML = s;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+          editor.setValue(e.target.result);
+        };
+      reader.readAsText(chosenfile);
+    }
+
+    function saveTextAsFile() {
+    var textToWrite = editor.getValue();
+    var textFileAsBlob = new Blob([textToWrite], {type:"text/plain;charset=utf-8"});
+    var fileNameToSaveAs = (document.getElementById('upfile').files[0]).name;
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+        // Chrome allows the link to be clicked
+        // without actually adding it to the DOM.
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+        // Firefox requires the link to be added to the DOM
+        // before it can be clicked.
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();}
+
+  
+    </script>
+
+  <!-- <div id="result"> </div> -->
+  Download
+  <button type="button"  onclick='saveTextAsFile()'>Save/Download</button><br><br><br>
+
+  </body>
+</html>
+
